@@ -234,6 +234,9 @@ body {
   font-size: clamp(3.1rem, 15vw, 4.5rem); line-height: 1.05;
   color: var(--morado); text-shadow: 0 2px 0 rgba(212, 175, 55, .35);
 }
+.apellidos { font-family: var(--f-titulo); font-size: .95rem; letter-spacing: .12em; color: var(--morado-2); margin-bottom: .3rem; }
+.y { font-family: var(--f-script); font-size: 1.6rem; color: var(--oro-osc); line-height: 1; }
+.direccion { font-family: var(--f-titulo); font-weight: 700; font-size: clamp(1.1rem, 5vw, 1.35rem); color: var(--morado); margin: .2rem 0; }
 .xv { font-family: var(--f-titulo); letter-spacing: .25em; font-size: 1.15rem; color: var(--oro-osc); }
 .fecha-corta { font-family: var(--f-titulo); letter-spacing: .2em; font-size: 1.05rem; color: var(--morado); }
 .hint { margin-top: 1rem; font-size: .9rem; font-style: italic; opacity: .7; }
@@ -330,24 +333,83 @@ body {
 .btn-nav:hover { background: rgba(243, 220, 138, .2); }
 .btn-nav:disabled { opacity: .3; cursor: default; }
 
-/* ---------- Reproductor ---------- */
-.btn-musica {
-  position: fixed; right: 18px; bottom: 18px; z-index: 60;
-  width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer;
-  display: grid; place-items: center;
-  background: radial-gradient(circle at 35% 30%, #f8e7a8, var(--oro) 50%, var(--oro-osc));
-  box-shadow: 0 6px 20px rgba(0, 0, 0, .4), 0 0 0 4px rgba(243, 220, 138, .25);
+/* ---------- Reproductor discreto ---------- */
+.mini-player {
+  position: fixed; left: 12px; bottom: 12px; z-index: 60;
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px 5px 5px; border-radius: 999px;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(243, 220, 138, .15);
+  backdrop-filter: blur(4px);
+  opacity: .32;
+  transition: opacity .3s, background .3s;
 }
-.eq { display: flex; align-items: flex-end; gap: 3px; height: 20px; }
-.eq i { width: 4px; height: 5px; background: #4a300c; border-radius: 2px; }
-.btn-musica.sonando .eq i { animation: eq .9s ease-in-out infinite; }
-.btn-musica.sonando .eq i:nth-child(2) { animation-delay: .2s; }
-.btn-musica.sonando .eq i:nth-child(3) { animation-delay: .4s; }
-.btn-musica.sonando .eq i:nth-child(4) { animation-delay: .1s; }
-.btn-musica:not(.sonando)::after {
-  content: ""; position: absolute; width: 30px; height: 2px; background: #4a300c; transform: rotate(-45deg);
+.mini-player:hover, .mini-player:focus-within, .mini-player.visible {
+  opacity: 1; background: rgba(42, 23, 64, .7);
 }
-@keyframes eq { 0%, 100% { height: 5px; } 50% { height: 20px; } }
+.mp-btn {
+  width: 30px; height: 30px; border-radius: 50%; border: none; cursor: pointer;
+  display: grid; place-items: center; padding: 0;
+  background: transparent; color: var(--oro-claro);
+}
+.mp-btn svg { width: 16px; height: 16px; grid-area: 1 / 1; }
+.mini-player .ico-pausa, .mini-player.sonando .ico-play { display: none; }
+.mini-player.sonando .ico-pausa { display: block; }
+.mp-barra {
+  position: relative; width: 70px; height: 14px; cursor: pointer;
+  display: flex; align-items: center;
+}
+.mp-barra::before {
+  content: ""; position: absolute; left: 0; right: 0; height: 2px;
+  background: rgba(255, 255, 255, .22); border-radius: 2px;
+}
+.mp-barra span {
+  position: relative; height: 2px; width: 0; border-radius: 2px;
+  background: var(--oro-claro); box-shadow: 0 0 6px var(--oro);
+}
+
+/* ---------- Páginas de foto (intercaladas) ---------- */
+.foto-pag { padding: 26px 22px 40px; }
+.marco-foto {
+  display: block; width: 100%;
+  height: calc(var(--h) - 130px);
+  padding: 0; border: 6px solid #fff; border-radius: 8px; cursor: zoom-in;
+  overflow: hidden; position: relative;
+  background: linear-gradient(160deg, var(--lila-claro), var(--lila));
+  box-shadow: 0 10px 24px rgba(60, 30, 80, .28), 0 0 0 1px rgba(212, 175, 55, .5);
+}
+.marco-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.marco-foto.vacia { cursor: default; }
+.marco-foto.vacia::after {
+  content: "Foto de la quinceañera"; position: absolute; inset: 0;
+  display: grid; place-items: center; padding: 20px;
+  font-family: var(--f-script); font-size: 1.9rem; color: rgba(255, 255, 255, .9);
+}
+.pie-foto { font-family: var(--f-script); font-size: 1.9rem; color: var(--morado); margin-top: .35rem; line-height: 1; }
+
+/* ---------- Efectos rápidos de texto ---------- */
+.hoja.activa .pagina > * {
+  animation: entrar .45s cubic-bezier(.2, .8, .2, 1) both;
+  animation-delay: calc(var(--i, 0) * 65ms + 60ms);
+}
+.hoja.activa .pagina > .nombre-grande { animation-name: pop; animation-duration: .55s; }
+.hoja.activa .pagina > .trenza { animation-name: estirar; }
+.hoja.activa .pagina > .titulo-pag { animation-name: espaciar; }
+.hoja.activa .pagina > .marco-foto { animation-name: revelar; animation-duration: .6s; }
+.hoja:not(.activa):not(.volteada) .pagina > * { opacity: 0; }
+
+.bienvenida .sobre > * {
+  animation: entrar .45s cubic-bezier(.2, .8, .2, 1) both;
+  animation-delay: calc(var(--i, 0) * 80ms + 300ms);
+}
+.bienvenida .sobre > h1 { animation-name: pop; animation-duration: .6s; }
+.bienvenida .sobre > .sello { animation: entrar .45s both calc(var(--i, 0) * 80ms + 300ms), latido 2.2s ease-in-out 1.5s infinite; }
+
+@keyframes entrar { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes pop { 0% { opacity: 0; transform: scale(.7); filter: blur(6px); } 70% { opacity: 1; transform: scale(1.06); filter: none; } 100% { opacity: 1; transform: none; } }
+@keyframes estirar { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes espaciar { from { opacity: 0; letter-spacing: .45em; filter: blur(3px); } to { opacity: 1; filter: none; } }
+@keyframes revelar { from { opacity: 0; clip-path: inset(50% 0 50% 0); transform: scale(1.04); } to { opacity: 1; clip-path: inset(0); transform: none; } }
 
 /* ---------- Visor de fotos ---------- */
 .lightbox {
@@ -365,5 +427,6 @@ body {
 /* ---------- Accesibilidad: menos movimiento ---------- */
 @media (prefers-reduced-motion: reduce) {
   .farol, .esquina, .sello { animation: none; }
+  .hoja .pagina > *, .bienvenida .sobre > * { animation: none !important; opacity: 1 !important; }
   .hoja, .libro { transition-duration: .01s; }
 }

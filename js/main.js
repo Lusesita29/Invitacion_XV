@@ -1,55 +1,58 @@
+/* =========================================================
+   1. CONFIGURACIÓN — edita SOLO esta parte con tus datos
+   ========================================================= */
 const CONFIG = {
-  nombre: " keitlin Agudelo García",
-  padres: "Jhonatan Agudelo & Katherine García",
+  nombre: "Keitlin",
+  apellidos: "Agudelo García",
+  nombreCompleto: "Keitlin Agudelo García",
+  padre: "Jhonatan Agudelo",
+  madre: "Katherine García",
   frase: "“Como faroles que iluminan el cielo, cada persona que amo ha llenado mi vida de luz. Hoy quiero que brilles conmigo.”",
 
-  // Fecha y hora del evento en formato ISO con zona horaria (Colombia = -05:00)
-  fechaEvento: "2027-02-20T19:00:00-05:00",
-  duracionHoras: 7,                          // para el botón "Agendar en mi calendario"
-  fechaTexto: "Sábado 20 de febrero de 2027",
-  fechaCorta: "20 · 02 · 2027",
+  // Fecha y hora en formato ISO con zona horaria de Colombia (-05:00)
+  fechaEvento: "2026-12-19T20:00:00-05:00",
+  fechaTexto: "Sábado 19 de diciembre de 2026",
+  fechaCorta: "19 · 12 · 2026",
+  hora: "8:00 p. m.",
 
-  ceremonia: {
-    titulo: "Ceremonia religiosa",
-    lugar: "Parroquia Nuestra Señora de la Candelaria",
-    direccion: "Calle 10 # 5-20, Bogotá",
-    hora: "7:00 p. m.",
-    mapsUrl: "https://maps.app.goo.gl/6yihX9d9K3eJJbQn8",  
-  },
-  recepcion: {
-    titulo: "Recepción",
-    lugar: "Salón Jardín de los Sueños",
-    direccion: "Carrera 15 # 85-40, Bogotá",
-    hora: "9:00 p. m.",
-    mapsUrl: "",
-    wazeUrl: ""
+  lugar: {
+    nombre: "",                    // Opcional: nombre del salón o "Casa de la familia Agudelo"
+    direccion: "Calle 37 # 9D-03",
+    ciudad: "",                    // ⚠️ ESCRIBE LA CIUDAD (ej. "Medellín") para que Maps encuentre la dirección
+    mapsUrl: "",                   // Mejor aún: pega el enlace de "Compartir" de Google Maps
+    wazeUrl: ""                    // Opcional
   },
 
-  // Fotos: súbelas a assets/img/ y escribe aquí sus nombres
+  // Música (debe coincidir EXACTO con el nombre del archivo, con mayúsculas)
+  musica: "assets/audio/Enredados.mp3",
+  inicioMusica: 0,                 // segundo en el que empieza la canción
+
+  // Fotos de la quinceañera: aparecen intercaladas, una página sí y una no.
+  // Hay 7 espacios para fotos. Si pones menos, se repiten en orden.
   fotos: [
     "assets/img/foto1.jpg",
     "assets/img/foto2.jpg",
     "assets/img/foto3.jpg",
-    "assets/img/foto4.jpg"
-  ],
-
-  itinerario: [
-    { hora: "7:00 p. m.", actividad: "Ceremonia religiosa" },
-    { hora: "9:00 p. m.", actividad: "Recepción y entrada de la quinceañera" },
-    { hora: "9:45 p. m.", actividad: "Vals y brindis" },
-    { hora: "10:30 p. m.", actividad: "Cena" },
-    { hora: "11:30 p. m.", actividad: "¡A bailar bajo los faroles!" }
+    "assets/img/foto4.jpg",
+    "assets/img/foto5.jpg",
+    "assets/img/foto6.jpg",
+    "assets/img/foto7.jpg"
   ],
 
   vestimenta: "Formal",
   notaVestimenta: "El color lila está reservado para la quinceañera.",
   regalo: "Tu presencia es mi mejor regalo; si deseas obsequiarme algo, habrá lluvia de sobres.",
-  notaPase: "Evento solo para adultos.",
+  notaPase: "",                    // ej. "Evento solo para adultos." (vacío = no se muestra)
   pasesPorDefecto: 1,
 
   // Confirmación de asistencia
-  fechaLimite: "10 de febrero de 2027",
-  whatsapp: "573001234567"            // Código de país + número, sin + ni espacios
+  fechaLimite: "12 de diciembre de 2026",
+  formulario: {
+    url: "https://docs.google.com/forms/d/e/TU_ID_DEL_FORMULARIO/viewform",
+    campoNombre: "entry.1111111111",
+    campoPases: "entry.2222222222"
+  },
+  whatsapp: "573001234567"         // Código de país + número, sin + ni espacios
 };
 
 /* =========================================================
@@ -69,30 +72,64 @@ const PASES = Math.max(1, Math.min(20, parseInt(params.get("pases"), 10) || CONF
 function aplicarConfig() {
   $$("[data-config]").forEach((el) => {
     const valor = leer(el.dataset.config);
-    if (typeof valor === "string") el.textContent = valor;
+    if (typeof valor === "string") {
+      el.textContent = valor;
+      el.hidden = valor.trim() === "";
+    }
   });
   document.title = `Mis XV Años · ${CONFIG.nombre}`;
   if (INVITADO) $("#saludoInvitado").textContent = `${INVITADO}, estás invitado(a) a`;
 }
 
 /* =========================================================
-   4. LIBRO CON ANIMACIÓN DE PÁGINAS
+   4. PÁGINAS DE FOTO INTERCALADAS (una sí, una no)
+   ========================================================= */
+function insertarFotos() {
+  const fotos = CONFIG.fotos;
+  if (!fotos.length) return;
+  const paginas = $$("#libro .hoja");
+
+  paginas.slice(0, -1).forEach((pagina, i) => {
+    const n = i % fotos.length;
+    const hoja = document.createElement("article");
+    hoja.className = "hoja hoja-foto";
+    hoja.innerHTML =
+      `<div class="cara frente foto-pag"><div class="pagina">
+         <button type="button" class="marco-foto" aria-label="Ver foto en grande"></button>
+         <p class="pie-foto"></p>
+       </div></div>`;
+
+    const marco = hoja.querySelector(".marco-foto");
+    const img = new Image();
+    img.alt = `Foto de ${CONFIG.nombre}`;
+    img.src = fotos[n];
+    img.onerror = () => { marco.classList.add("vacia"); img.remove(); };
+    marco.appendChild(img);
+    marco.addEventListener("click", () => { if (!marco.classList.contains("vacia")) abrirFoto(n); });
+    hoja.querySelector(".pie-foto").textContent = CONFIG.nombre;
+
+    pagina.after(hoja);
+  });
+}
+
+/* =========================================================
+   5. LIBRO CON ANIMACIÓN DE PÁGINAS
    ========================================================= */
 let hojas = [];
-let actual = 0; // número de hojas ya volteadas
+let actual = 0;
+let tActiva;
 
 function prepararLibro() {
+  insertarFotos();
   hojas = $$(".hoja");
+
   hojas.forEach((hoja, i) => {
     const frente = hoja.querySelector(".frente");
-
-    // Decoración floral en las esquinas
     frente.insertAdjacentHTML("beforeend",
       `<svg class="deco-esq sup" aria-hidden="true"><use href="#esquinaFlor"/></svg>
        <svg class="deco-esq inf" aria-hidden="true"><use href="#esquinaFlor"/></svg>
        <span class="num-pag">${i + 1}</span>`);
 
-    // Esquina doblada para pasar página (menos en la última)
     if (i < hojas.length - 1) {
       const esquina = document.createElement("button");
       esquina.className = "esquina";
@@ -101,13 +138,15 @@ function prepararLibro() {
       frente.appendChild(esquina);
     }
 
-    // Reverso decorativo
     hoja.insertAdjacentHTML("beforeend",
       `<div class="cara reverso" aria-hidden="true"><svg><use href="#torre"/></svg></div>`);
 
     hoja.addEventListener("transitionend", (e) => {
       if (e.propertyName === "transform") hoja.classList.remove("girando");
     });
+
+    // Orden de aparición de cada texto (efecto escalonado)
+    [...hoja.querySelector(".pagina").children].forEach((el, k) => el.style.setProperty("--i", k));
   });
 
   $("#btnSiguiente").addEventListener("click", siguiente);
@@ -119,7 +158,6 @@ function prepararLibro() {
     if (e.key === "ArrowLeft") anterior();
   });
 
-  // Deslizar con el dedo
   let x0 = 0, y0 = 0;
   const libro = $("#libro");
   libro.addEventListener("touchstart", (e) => {
@@ -136,10 +174,10 @@ function prepararLibro() {
 
 function siguiente() {
   if (actual >= hojas.length - 1) return;
-  const hoja = hojas[actual];
-  hoja.classList.add("girando", "volteada");
+  hojas[actual].classList.add("girando", "volteada");
   actual++;
   actualizarLibro();
+  marcarActiva(180);
 }
 
 function anterior() {
@@ -149,6 +187,15 @@ function anterior() {
   hoja.classList.add("girando");
   hoja.classList.remove("volteada");
   actualizarLibro();
+  marcarActiva(0);
+}
+
+// Activa los efectos de texto de la página visible
+function marcarActiva(retraso) {
+  clearTimeout(tActiva);
+  hojas.forEach((h) => h.classList.remove("activa"));
+  const hoja = hojas[actual];
+  tActiva = setTimeout(() => hoja.classList.add("activa"), retraso);
 }
 
 function actualizarLibro() {
@@ -164,11 +211,12 @@ function actualizarLibro() {
 }
 
 /* =========================================================
-   5. CUENTA REGRESIVA
+   6. CUENTA REGRESIVA
    ========================================================= */
 function iniciarCuentaRegresiva() {
   const objetivo = new Date(CONFIG.fechaEvento).getTime();
   const dos = (n) => String(n).padStart(2, "0");
+  let intervalo;
 
   function tick() {
     const resta = objetivo - Date.now();
@@ -183,60 +231,25 @@ function iniciarCuentaRegresiva() {
     $("#cMin").textContent = dos(Math.floor((resta / 60000) % 60));
     $("#cSeg").textContent = dos(Math.floor((resta / 1000) % 60));
   }
-  const intervalo = setInterval(tick, 1000);
+  intervalo = setInterval(tick, 1000);
   tick();
-
-  // Enlace de Google Calendar
-  const fmt = (d) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-  const inicio = new Date(CONFIG.fechaEvento);
-  const fin = new Date(inicio.getTime() + CONFIG.duracionHoras * 3600000);
-  const cal = new URL("https://calendar.google.com/calendar/render");
-  cal.searchParams.set("action", "TEMPLATE");
-  cal.searchParams.set("text", `XV Años de ${CONFIG.nombre}`);
-  cal.searchParams.set("dates", `${fmt(inicio)}/${fmt(fin)}`);
-  cal.searchParams.set("details", `Ceremonia: ${CONFIG.ceremonia.lugar}\nRecepción: ${CONFIG.recepcion.lugar}`);
-  cal.searchParams.set("location", CONFIG.ceremonia.direccion);
-  $("#btnCalendario").href = cal.toString();
 }
 
 /* =========================================================
-   6. BOTONES DE UBICACIÓN
+   7. BOTONES DE UBICACIÓN
    ========================================================= */
-function prepararUbicaciones() {
-  const enlaces = (lugar) => {
-    const q = encodeURIComponent(`${lugar.lugar}, ${lugar.direccion}`);
-    return {
-      maps: lugar.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${q}`,
-    };
-  };
-  const c = enlaces(CONFIG.ceremonia);
-  const r = enlaces(CONFIG.recepcion);
-  $("#mapsCeremonia").href = c.maps;
-  $("#wazeCeremonia").href = c.waze;
-  $("#mapsRecepcion").href = r.maps;
-  $("#wazeRecepcion").href = r.waze;
+function prepararUbicacion() {
+  const l = CONFIG.lugar;
+  const q = encodeURIComponent([l.nombre, l.direccion, l.ciudad, "Colombia"].filter(Boolean).join(", "));
+  $("#btnMaps").href = l.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${q}`;
+  $("#btnWaze").href = l.wazeUrl || `https://waze.com/ul?q=${q}&navigate=yes`;
 }
 
 /* =========================================================
-   7. GALERÍA DE FOTOS + VISOR
+   8. VISOR DE FOTOS
    ========================================================= */
 let fotoActual = 0;
-function renderGaleria() {
-  const g = $("#galeria");
-  CONFIG.fotos.forEach((src, i) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "foto";
-    const img = new Image();
-    img.loading = "lazy";
-    img.alt = `Foto ${i + 1} de ${CONFIG.nombre}`;
-    img.src = src;
-    img.onerror = () => { btn.classList.add("vacia"); img.remove(); };
-    btn.appendChild(img);
-    btn.addEventListener("click", () => { if (!btn.classList.contains("vacia")) abrirFoto(i); });
-    g.appendChild(btn);
-  });
-
+function prepararVisor() {
   $("#lbCerrar").addEventListener("click", cerrarFoto);
   $("#lightbox").addEventListener("click", (e) => { if (e.target.id === "lightbox") cerrarFoto(); });
   $("#lbPrev").addEventListener("click", () => moverFoto(-1));
@@ -260,22 +273,6 @@ function moverFoto(paso) {
 }
 
 /* =========================================================
-   8. ITINERARIO
-   ========================================================= */
-function renderItinerario() {
-  const ul = $("#itinerario");
-  CONFIG.itinerario.forEach(({ hora, actividad }) => {
-    const li = document.createElement("li");
-    const s = document.createElement("strong");
-    const t = document.createElement("span");
-    s.textContent = hora;
-    t.textContent = actividad;
-    li.append(s, t);
-    ul.appendChild(li);
-  });
-}
-
-/* =========================================================
    9. PASES PERSONALIZADOS  (?invitado=Familia%20Pérez&pases=4)
    ========================================================= */
 function prepararPase() {
@@ -291,41 +288,86 @@ function prepararConfirmacion() {
   const quien = INVITADO ? `Soy ${INVITADO} y` : "Hola,";
   const msg = `${quien} confirmo mi asistencia a los XV años de ${CONFIG.nombre} ✨ (${PASES} ${PASES === 1 ? "pase" : "pases"})`;
   $("#btnWhatsapp").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+
+  const f = CONFIG.formulario;
+  const form = new URL(f.url);
+  form.searchParams.set("usp", "pp_url");
+  if (INVITADO) form.searchParams.set(f.campoNombre, INVITADO);
+  form.searchParams.set(f.campoPases, PASES);
+  $("#btnFormulario").href = form.toString();
 }
 
 /* =========================================================
-   11. MÚSICA
+   11. REPRODUCTOR DISCRETO
    ========================================================= */
 let musicaPausadaPorUsuario = false;
 function prepararMusica() {
   const audio = $("#audio");
-  const btn = $("#btnMusica");
+  const player = $("#miniPlayer");
+  const barra = $("#mpBarra");
+  audio.src = CONFIG.musica;
   audio.volume = 0.6;
 
-  btn.addEventListener("click", () => {
+  audio.addEventListener("loadedmetadata", () => {
+    if (CONFIG.inicioMusica) audio.currentTime = CONFIG.inicioMusica;
+  }, { once: true });
+
+  $("#btnMusica").addEventListener("click", () => {
     if (audio.paused) { musicaPausadaPorUsuario = false; reproducir(); }
     else { musicaPausadaPorUsuario = true; audio.pause(); }
   });
-  audio.addEventListener("play", () => { btn.classList.add("sonando"); btn.setAttribute("aria-label", "Pausar música"); });
-  audio.addEventListener("pause", () => { btn.classList.remove("sonando"); btn.setAttribute("aria-label", "Reproducir música"); });
+  audio.addEventListener("play", () => {
+    player.classList.add("sonando");
+    $("#btnMusica").setAttribute("aria-label", "Pausar música");
+  });
+  audio.addEventListener("pause", () => {
+    player.classList.remove("sonando");
+    $("#btnMusica").setAttribute("aria-label", "Reproducir música");
+  });
+  audio.addEventListener("timeupdate", () => {
+    if (audio.duration) $("#mpProgreso").style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+  });
 
-  // Pausar si la persona cambia de pestaña o bloquea el celular
+  // Tocar la barra para adelantar o regresar
+  barra.addEventListener("click", (e) => {
+    if (!audio.duration) return;
+    const r = barra.getBoundingClientRect();
+    audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+  });
+  barra.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") audio.currentTime += 5;
+    if (e.key === "ArrowLeft") audio.currentTime -= 5;
+  });
+
+  // En el celular se ilumina unos segundos al tocarlo
+  let tPlayer;
+  player.addEventListener("touchstart", () => {
+    player.classList.add("visible");
+    clearTimeout(tPlayer);
+    tPlayer = setTimeout(() => player.classList.remove("visible"), 3000);
+  }, { passive: true });
+
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) audio.pause();
-    else if (!musicaPausadaPorUsuario && !btn.classList.contains("oculto")) reproducir();
+    else if (!musicaPausadaPorUsuario && !player.classList.contains("oculto")) reproducir();
   });
 }
-function reproducir() { $("#audio").play().catch(() => {}); }
+function reproducir() {
+  const p = $("#audio").play();
+  if (p) p.catch((e) => console.warn("No se pudo reproducir el audio:", e.message));
+}
 
 /* =========================================================
    12. BIENVENIDA Y FAROLES
    ========================================================= */
 function prepararBienvenida() {
+  [...$(".sobre").children].forEach((el, k) => el.style.setProperty("--i", k));
   $("#btnAbrir").addEventListener("click", () => {
-    reproducir(); // los navegadores solo permiten audio después de un toque
     $("#bienvenida").classList.add("salir");
     $("#escenario").classList.remove("oculto");
-    $("#btnMusica").classList.remove("oculto");
+    $("#miniPlayer").classList.remove("oculto");
+    if (hojas.length) marcarActiva(250);
+    reproducir(); // los navegadores solo permiten audio después de un toque
   });
 }
 
@@ -347,11 +389,11 @@ function crearFaroles() {
    INICIO
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  // El sello va primero: así siempre abre, aunque otra parte falle
+  // El sello y la música van primero: así siempre funcionan, aunque otra parte falle
   const pasos = [
     prepararBienvenida, prepararMusica, aplicarConfig, prepararLibro,
-    renderGaleria, renderItinerario, prepararUbicaciones, prepararPase,
-    prepararConfirmacion, iniciarCuentaRegresiva, crearFaroles
+    prepararVisor, prepararUbicacion, prepararPase, prepararConfirmacion,
+    iniciarCuentaRegresiva, crearFaroles
   ];
   pasos.forEach((paso) => {
     try { paso(); }
