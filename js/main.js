@@ -24,7 +24,7 @@ const CONFIG = {
   },
 
   // Música (debe coincidir EXACTO con el nombre del archivo, con mayúsculas)
-  musica: "assets/audio/Enredados.mp3",
+    musica: "assets/audio/Enredados.mp3",
   inicioMusica: 0,                 // segundo en el que empieza la canción
 
   // Fotos de la quinceañera: aparecen intercaladas, una página sí y una no.
@@ -47,12 +47,7 @@ const CONFIG = {
 
   // Confirmación de asistencia
   fechaLimite: "12 de diciembre de 2026",
-  formulario: {
-    url: "https://docs.google.com/forms/d/e/TU_ID_DEL_FORMULARIO/viewform",
-    campoNombre: "entry.1111111111",
-    campoPases: "entry.2222222222"
-  },
-  whatsapp: "573001234567"         // Código de país + número, sin + ni espacios
+  whatsapp: "573168041589"         // Código de país + número, sin + ni espacios
 };
 
 /* =========================================================
