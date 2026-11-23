@@ -347,15 +347,14 @@ function crearFaroles() {
    INICIO
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  aplicarConfig();
-  prepararLibro();
-  renderGaleria();
-  renderItinerario();
-  prepararUbicaciones();
-  prepararPase();
-  prepararConfirmacion();
-  iniciarCuentaRegresiva();
-  prepararMusica();
-  prepararBienvenida();
-  crearFaroles();
+  // El sello va primero: así siempre abre, aunque otra parte falle
+  const pasos = [
+    prepararBienvenida, prepararMusica, aplicarConfig, prepararLibro,
+    renderGaleria, renderItinerario, prepararUbicaciones, prepararPase,
+    prepararConfirmacion, iniciarCuentaRegresiva, crearFaroles
+  ];
+  pasos.forEach((paso) => {
+    try { paso(); }
+    catch (err) { console.error(`Error en ${paso.name}:`, err); }
+  });
 });
