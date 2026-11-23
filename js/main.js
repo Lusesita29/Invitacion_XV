@@ -18,9 +18,9 @@ const CONFIG = {
   lugar: {
     nombre: "",                    // Opcional: nombre del salón o "Casa de la familia Agudelo"
     direccion: "Calle 37 # 9D-03",
-    ciudad: "",                    // ⚠️ ESCRIBE LA CIUDAD (ej. "Medellín") para que Maps encuentre la dirección
-    mapsUrl: "",                   // Mejor aún: pega el enlace de "Compartir" de Google Maps
-    wazeUrl: ""                    // Opcional
+    Barrio: "El Campito",                    // ⚠️ ESCRIBE LA CIUDAD (ej. "Medellín") para que Maps encuentre la dirección
+    mapsUrl: "https://maps.app.goo.gl/6yihX9d9K3eJJbQn8",                   // Mejor aún: pega el enlace de "Compartir" de Google Maps
+
   },
 
   // Música (debe coincidir EXACTO con el nombre del archivo, con mayúsculas)
