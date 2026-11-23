@@ -368,6 +368,16 @@ body {
   background: var(--oro-claro); box-shadow: 0 0 6px var(--oro);
 }
 
+/* ---------- Mapa de ubicación ---------- */
+.mapa {
+  width: 100%; height: clamp(150px, calc(var(--h) * .36), 230px);
+  margin: .8rem 0 .2rem; border-radius: 12px; overflow: hidden;
+  border: 4px solid #fff;
+  background: linear-gradient(160deg, var(--lila-claro), var(--lila));
+  box-shadow: 0 8px 20px rgba(60, 30, 80, .25), 0 0 0 1px rgba(212, 175, 55, .55);
+}
+.mapa iframe { width: 100%; height: 100%; border: 0; display: block; }
+
 /* ---------- Páginas de foto (intercaladas) ---------- */
 .foto-pag { padding: 26px 22px 40px; }
 .marco-foto {
@@ -390,13 +400,14 @@ body {
 /* ---------- Efectos rápidos de texto ---------- */
 .hoja.activa .pagina > * {
   animation: entrar .45s cubic-bezier(.2, .8, .2, 1) both;
-  animation-delay: calc(var(--i, 0) * 65ms + 60ms);
+  animation-delay: calc(var(--i, 0) * 45ms);
 }
+/* La portada se muestra al instante, sin efecto */
+#libro > .hoja:first-child .pagina > * { animation: none !important; opacity: 1; }
 .hoja.activa .pagina > .nombre-grande { animation-name: pop; animation-duration: .55s; }
 .hoja.activa .pagina > .trenza { animation-name: estirar; }
 .hoja.activa .pagina > .titulo-pag { animation-name: espaciar; }
 .hoja.activa .pagina > .marco-foto { animation-name: revelar; animation-duration: .6s; }
-.hoja:not(.activa):not(.volteada) .pagina > * { opacity: 0; }
 
 .bienvenida .sobre > * {
   animation: entrar .45s cubic-bezier(.2, .8, .2, 1) both;

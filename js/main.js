@@ -18,7 +18,7 @@ const CONFIG = {
   lugar: {
     nombre: "",                    // Opcional: nombre del salón o "Casa de la familia Agudelo"
     direccion: "Calle 37 # 9D-03",
-    Barrio: "El Campito",                    // ⚠️ ESCRIBE LA CIUDAD (ej. "Medellín") para que Maps encuentre la dirección
+    Barrio: "",                    // ⚠️ ESCRIBE LA CIUDAD (ej. "Medellín") para que Maps encuentre la dirección
     mapsUrl: "https://maps.app.goo.gl/6yihX9d9K3eJJbQn8",                   // Mejor aún: pega el enlace de "Compartir" de Google Maps
 
   },
@@ -177,7 +177,7 @@ function siguiente() {
   hojas[actual].classList.add("girando", "volteada");
   actual++;
   actualizarLibro();
-  marcarActiva(180);
+  marcarActiva(0);
 }
 
 function anterior() {
@@ -366,7 +366,6 @@ function prepararBienvenida() {
     $("#bienvenida").classList.add("salir");
     $("#escenario").classList.remove("oculto");
     $("#miniPlayer").classList.remove("oculto");
-    if (hojas.length) marcarActiva(250);
     reproducir(); // los navegadores solo permiten audio después de un toque
   });
 }
