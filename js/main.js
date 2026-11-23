@@ -3,6 +3,7 @@
    ========================================================= */
 const CONFIG = {
   nombre: "Keitlin",
+  musica: "assets/audio/Enredados.mp3",
   apellidos: "Agudelo García",
   nombreCompleto: "Keitlin Agudelo García",
   padre: "Jhonatan Agudelo",
@@ -15,10 +16,9 @@ const CONFIG = {
   fechaCorta: "19 · 12 · 2026",
   hora: "8:00 p. m.",
 
-  lugar: {
-    nombre: "",                    // Opcional: nombre del salón o "Casa de la familia Agudelo"
+  lugar: {                   // Opcional: nombre del salón o "Casa de la familia Agudelo"
     direccion: "Calle 37 # 9D-03",
-    Barrio: "",                    // ⚠️ ESCRIBE LA CIUDAD (ej. "Medellín") para que Maps encuentre la dirección
+    Barrio: "El Campito, Barranquilla, Atlántico",                    // ⚠️ ESCRIBE LA CIUDAD (ej. "Medellín") para que Maps encuentre la dirección
     mapsUrl: "https://maps.app.goo.gl/6yihX9d9K3eJJbQn8",                   // Mejor aún: pega el enlace de "Compartir" de Google Maps
 
   },
@@ -287,14 +287,7 @@ function prepararPase() {
 function prepararConfirmacion() {
   const quien = INVITADO ? `Soy ${INVITADO} y` : "Hola,";
   const msg = `${quien} confirmo mi asistencia a los XV años de ${CONFIG.nombre} ✨ (${PASES} ${PASES === 1 ? "pase" : "pases"})`;
-  $("#btnWhatsapp").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-
-  const f = CONFIG.formulario;
-  const form = new URL(f.url);
-  form.searchParams.set("usp", "pp_url");
-  if (INVITADO) form.searchParams.set(f.campoNombre, INVITADO);
-  form.searchParams.set(f.campoPases, PASES);
-  $("#btnFormulario").href = form.toString();
+  $("#btnWhatsapp").href = `https://wa.me/+573168041589${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
 }
 
 /* =========================================================
