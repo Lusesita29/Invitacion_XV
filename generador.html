@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Generador de invitaciones</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #2a1740; color: #fdf8ee; display: grid; place-items: center; min-height: 100vh; margin: 0; padding: 16px; box-sizing: border-box; }
+    .caja { background: #fdf8ee; color: #3d2a4f; border-radius: 18px; padding: 24px; width: min(94vw, 460px); box-shadow: 0 20px 50px rgba(0,0,0,.4); }
+    h1 { font-size: 1.3rem; margin: 0 0 16px; color: #4b2a6b; }
+    label { display: block; font-weight: 600; margin: 12px 0 4px; }
+    input, textarea { width: 100%; padding: 10px; border: 1px solid #b79fd8; border-radius: 10px; font-size: 1rem; box-sizing: border-box; }
+    textarea { height: 90px; resize: vertical; }
+    .fila { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    button, a.btn { flex: 1; padding: 11px; border: none; border-radius: 999px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; font-size: .95rem; }
+    .oro { background: #d4af37; color: #3a2410; }
+    .verde { background: #1f9d55; color: #fff; }
+    small { opacity: .7; }
+  </style>
+</head>
+<body>
+  <div class="caja">
+    <h1>✨ Generador de pases</h1>
+    <label for="nombre">Nombre del invitado o familia</label>
+    <input id="nombre" placeholder="Familia Pérez Gómez">
+    <label for="pases">Número de pases</label>
+    <input id="pases" type="number" min="1" max="20" value="2">
+    <label for="tel">WhatsApp del invitado (opcional)</label>
+    <input id="tel" placeholder="573001234567">
+    <small>Código de país + número, sin espacios.</small>
+    <label for="enlace">Enlace personalizado</label>
+    <textarea id="enlace" readonly></textarea>
+    <div class="fila">
+      <button class="oro" id="copiar">Copiar enlace</button>
+      <a class="btn verde" id="enviar" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+    </div>
+  </div>
+  <script>
+    const base = location.origin + "/";
+    const $ = (id) => document.getElementById(id);
+    function generar() {
+      const url = new URL(base);
+      const n = $("nombre").value.trim();
+      if (n) url.searchParams.set("invitado", n);
+      url.searchParams.set("pases", $("pases").value || 1);
+      $("enlace").value = url.toString();
+      const saludo = n ? `Querida ${n}:` : "¡Hola!";
+      const texto = `${saludo} con mucha ilusión te invito a celebrar mis XV años ✨ Abre tu invitación aquí: ${url}`;
+      const tel = $("tel").value.replace(/\D/g, "");
+      $("enviar").href = `https://wa.me/${tel}?text=${encodeURIComponent(texto)}`;
+    }
+    ["nombre", "pases", "tel"].forEach((id) => $(id).addEventListener("input", generar));
+    $("copiar").addEventListener("click", async () => {
+      await navigator.clipboard.writeText($("enlace").value);
+      $("copiar").textContent = "¡Copiado! ✓";
+      setTimeout(() => ($("copiar").textContent = "Copiar enlace"), 1500);
+    });
+    generar();
+  </script>
+</body>
+</html>
