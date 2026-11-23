@@ -14,8 +14,7 @@ const CONFIG = {
     lugar: "Parroquia Nuestra Señora de la Candelaria",
     direccion: "Calle 10 # 5-20, Bogotá",
     hora: "7:00 p. m.",
-    mapsUrl: "",   // Pega el enlace de "Compartir" de Google Maps (https://maps.app.goo.gl/...)
-    wazeUrl: ""    // Opcional. Si lo dejas vacío, se genera con la dirección
+    mapsUrl: "https://maps.app.goo.gl/6yihX9d9K3eJJbQn8",  
   },
   recepcion: {
     titulo: "Recepción",
@@ -208,7 +207,6 @@ function prepararUbicaciones() {
     const q = encodeURIComponent(`${lugar.lugar}, ${lugar.direccion}`);
     return {
       maps: lugar.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${q}`,
-      waze: lugar.wazeUrl || `https://waze.com/ul?q=${q}&navigate=yes`
     };
   };
   const c = enlaces(CONFIG.ceremonia);
@@ -290,13 +288,6 @@ function prepararPase() {
    10. CONFIRMACIÓN (Google Forms + WhatsApp)
    ========================================================= */
 function prepararConfirmacion() {
-  const f = CONFIG.formulario;
-  const form = new URL(f.url);
-  form.searchParams.set("usp", "pp_url");
-  if (INVITADO) form.searchParams.set(f.campoNombre, INVITADO);
-  form.searchParams.set(f.campoPases, PASES);
-  $("#btnFormulario").href = form.toString();
-
   const quien = INVITADO ? `Soy ${INVITADO} y` : "Hola,";
   const msg = `${quien} confirmo mi asistencia a los XV años de ${CONFIG.nombre} ✨ (${PASES} ${PASES === 1 ? "pase" : "pases"})`;
   $("#btnWhatsapp").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
