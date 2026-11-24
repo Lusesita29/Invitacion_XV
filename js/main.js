@@ -35,7 +35,6 @@ const CONFIG = {
   ],
 
   vestimenta: "Formal",
-  notaVestimenta: "El color lila está reservado para la quinceañera.",
   regalo: "Con mucho cariño recibiré el obsequio que desees darme, ya sea un obsequio o lluvia de sobres.",
   notaPase: "",                    
   pasesPorDefecto: 1,
