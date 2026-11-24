@@ -36,13 +36,13 @@ const CONFIG = {
 
   vestimenta: "Formal",
   notaVestimenta: "El color lila está reservado para la quinceañera.",
-  regalo: "Tu presencia es mi mejor regalo; si deseas obsequiarme algo, habrá lluvia de sobres.",
-  notaPase: "",                    // ej. "Evento solo para adultos." (vacío = no se muestra)
+  regalo: "Con mucho cariño recibiré el obsequio que desees darme, ya sea un obsequio o lluvia de sobres.",
+  notaPase: "",                    
   pasesPorDefecto: 1,
 
   // Confirmación de asistencia
   fechaLimite: "12 de diciembre de 2026",
-  whatsapp: "573168041589"         // Código de país + número, sin + ni espacios
+  whatsapp: "573168041589"         
 };
 
 /* =========================================================
