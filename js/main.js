@@ -40,7 +40,6 @@ const CONFIG = {
   pasesPorDefecto: 1,
 
   // Confirmación de asistencia
-  fechaLimite: "12 de diciembre de 2026",
   whatsapp: "573168041589"         
 };
 
