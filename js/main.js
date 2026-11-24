@@ -4,7 +4,7 @@ const CONFIG = {
   nombreCompleto: "Keitlin Agudelo García",
   padre: "Jhonatan Agudelo",
   madre: "Katherine García",
-  frase: "“Como faroles que iluminan el cielo, cada persona que amo ha llenado mi vida de luz. Hoy quiero que brilles conmigo.”",
+  frase: "“Tu presencia hará que esta noche sea un recuerdo inolvidable y convertirá este sueño en el día más importante de mi vida.”",
 
   // Fecha y hora en formato ISO con zona horaria de Colombia (-05:00)
   fechaEvento: "2026-12-19T20:00:00-05:00",
