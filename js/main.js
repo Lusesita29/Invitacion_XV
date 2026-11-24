@@ -1,6 +1,3 @@
-/* =========================================================
-   1. CONFIGURACIÓN — edita SOLO esta parte con tus datos
-   ========================================================= */
 const CONFIG = {
   nombre: "Keitlin",
   apellidos: "Agudelo García",
@@ -35,10 +32,6 @@ const CONFIG = {
     "assets/img/foto1.jpg",
     "assets/img/foto2.jpg",
     "assets/img/foto3.jpg",
-    "assets/img/foto4.jpg",
-    "assets/img/foto5.jpg",
-    "assets/img/foto6.jpg",
-    "assets/img/foto7.jpg"
   ],
 
   vestimenta: "Formal",
@@ -98,7 +91,6 @@ function insertarFotos() {
 
     const marco = hoja.querySelector(".marco-foto");
     const img = new Image();
-    img.alt = `Foto de ${CONFIG.nombre}`;
     img.src = fotos[n];
     img.onerror = () => { marco.classList.add("vacia"); img.remove(); };
     marco.appendChild(img);

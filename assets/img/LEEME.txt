@@ -1,2 +1,0 @@
-Coloca aquí tus fotos (foto1.jpg, foto2.jpg, ...) y una imagen "portada-og.jpg" (1200x630)
-para la vista previa al compartir por WhatsApp. Escribe los nombres en CONFIG.fotos (js/main.js).
