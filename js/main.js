@@ -19,7 +19,7 @@ const CONFIG = {
 
   },
 
-   // Música (debe coincidir EXACTO con el nombre del archivo, con mayúsculas)
+   // Música 
   musica: "assets/audio/Enredados.mp3",
   inicioMusica: 0,                 // segundo en el que empieza la canción
   cancion: {          // nombre que se ve en la página de música
