@@ -23,9 +23,12 @@ const CONFIG = {
 
   },
 
-  // Música (debe coincidir EXACTO con el nombre del archivo, con mayúsculas)
-    musica: "assets/audio/Enredados.mp3",
+   // Música (debe coincidir EXACTO con el nombre del archivo, con mayúsculas)
+  musica: "assets/audio/Enredados.mp3",
   inicioMusica: 0,                 // segundo en el que empieza la canción
+  cancion: {          // nombre que se ve en la página de música
+    detalle: "Dale play y vive la magia conmigo ✨"
+  },
 
   // Fotos de la quinceañera: aparecen intercaladas, una página sí y una no.
   // Hay 7 espacios para fotos. Si pones menos, se repiten en orden.

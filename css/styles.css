@@ -333,39 +333,48 @@ body {
 .btn-nav:hover { background: rgba(243, 220, 138, .2); }
 .btn-nav:disabled { opacity: .3; cursor: default; }
 
-/* ---------- Reproductor discreto ---------- */
-.mini-player {
-  position: fixed; left: 12px; bottom: 12px; z-index: 60;
-  display: flex; align-items: center; gap: 8px;
-  padding: 5px 12px 5px 5px; border-radius: 999px;
-  background: rgba(255, 255, 255, .05);
-  border: 1px solid rgba(243, 220, 138, .15);
-  backdrop-filter: blur(4px);
-  opacity: .32;
-  transition: opacity .3s, background .3s;
+/* ---------- Reproductor en la esquina del libro ---------- */
+.rep-esquina {
+  position: absolute; top: -18px; right: -18px; z-index: 1200;
+  width: 60px; height: 60px; padding: 0; border: none; border-radius: 50%;
+  background: transparent; cursor: pointer;
+  display: grid; place-items: center;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .45));
+  transition: transform .25s;
 }
-.mini-player:hover, .mini-player:focus-within, .mini-player.visible {
-  opacity: 1; background: rgba(42, 23, 64, .7);
+.rep-esquina:hover { transform: scale(1.08); }
+.rep-esquina > * { grid-area: 1 / 1; }
+.rep-esquina-anillo { width: 60px; height: 60px; transform: rotate(-90deg); }
+.anillo-fondo { fill: rgba(42, 23, 64, .85); stroke: rgba(243, 220, 138, .3); stroke-width: 3; }
+.anillo-progreso {
+  fill: none; stroke: var(--oro-claro); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 169.65; stroke-dashoffset: 169.65;
+  transition: stroke-dashoffset .3s linear;
 }
-.mp-btn {
-  width: 30px; height: 30px; border-radius: 50%; border: none; cursor: pointer;
-  display: grid; place-items: center; padding: 0;
-  background: transparent; color: var(--oro-claro);
+.rep-esquina-vinilo {
+  width: 46px; height: 46px; border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--oro-claro) 0 11px, var(--oro) 12px, transparent 13px),
+    repeating-radial-gradient(circle, #241338 0 2px, #3d2a55 2px 3px);
+  box-shadow: inset 0 0 0 2px rgba(243, 220, 138, .55);
+  animation: girar 4s linear infinite paused;
 }
-.mp-btn svg { width: 16px; height: 16px; grid-area: 1 / 1; }
-.mini-player .ico-pausa, .mini-player.sonando .ico-play { display: none; }
-.mini-player.sonando .ico-pausa { display: block; }
-.mp-barra {
-  position: relative; width: 70px; height: 14px; cursor: pointer;
-  display: flex; align-items: center;
+.rep-esquina.sonando .rep-esquina-vinilo { animation-play-state: running; }
+.rep-esquina svg.ico-play, .rep-esquina svg.ico-pausa { width: 14px; height: 14px; color: #3a2058; position: relative; }
+.rep-esquina .ico-pausa, .rep-esquina.sonando .ico-play { display: none; }
+.rep-esquina.sonando .ico-pausa { display: block; }
+/* Pequeña nota musical que flota mientras suena */
+.rep-esquina::after {
+  content: "♪"; position: absolute; top: -6px; left: -4px;
+  font-size: 1rem; color: var(--oro-claro); opacity: 0;
+  text-shadow: 0 0 6px rgba(243, 220, 138, .8);
 }
-.mp-barra::before {
-  content: ""; position: absolute; left: 0; right: 0; height: 2px;
-  background: rgba(255, 255, 255, .22); border-radius: 2px;
-}
-.mp-barra span {
-  position: relative; height: 2px; width: 0; border-radius: 2px;
-  background: var(--oro-claro); box-shadow: 0 0 6px var(--oro);
+.rep-esquina.sonando::after { animation: nota 2.4s ease-out infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+@keyframes nota {
+  0% { opacity: 0; transform: translate(0, 0); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-10px, -22px) rotate(-15deg); }
 }
 
 /* ---------- Mapa de ubicación ---------- */
@@ -437,7 +446,54 @@ body {
 
 /* ---------- Accesibilidad: menos movimiento ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .farol, .esquina, .sello { animation: none; }
+  .farol, .esquina, .sello, .rep-esquina-vinilo, .rep-esquina::after { animation: none !important; }
   .hoja .pagina > *, .bienvenida .sobre > * { animation: none !important; opacity: 1 !important; }
   .hoja, .libro { transition-duration: .01s; }
 }
+
+/* ---------- Página de música ---------- */
+.disco { width: min(50%, 180px); aspect-ratio: 1; margin: .7rem auto .3rem; position: relative; }
+.vinilo {
+  position: absolute; inset: 0; border-radius: 50%;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(circle, var(--oro-claro) 0 17%, var(--oro) 17.5% 21%, transparent 21.5%),
+    repeating-radial-gradient(circle, #2a1740 0 2px, #3b2157 2px 4px);
+  box-shadow: 0 10px 24px rgba(42, 23, 64, .45), inset 0 0 0 3px rgba(212, 175, 55, .6);
+  animation: girar 6s linear infinite;
+  animation-play-state: paused;
+}
+.vinilo::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .2), transparent 40%, transparent 60%, rgba(255, 255, 255, .08));
+}
+.vinilo svg { width: 17%; height: 23%; position: relative; z-index: 1; }
+body.musica-on .vinilo { animation-play-state: running; }
+@keyframes girar { to { transform: rotate(360deg); } }
+
+.rep { display: flex; align-items: center; gap: 8px; margin-top: .5rem; font-size: .85rem; color: var(--morado-2); font-variant-numeric: tabular-nums; }
+.rep-barra { flex: 1; height: 18px; position: relative; cursor: pointer; display: flex; align-items: center; }
+.rep-barra::before {
+  content: ""; position: absolute; left: 0; right: 0; height: 4px; border-radius: 4px;
+  background: var(--lila-claro); box-shadow: inset 0 0 0 1px rgba(183, 159, 216, .6);
+}
+.rep-barra span { position: relative; height: 4px; width: 0; border-radius: 4px; background: linear-gradient(90deg, var(--oro), var(--oro-claro)); }
+.rep-barra span::after {
+  content: ""; position: absolute; right: -6px; top: 50%; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--oro); transform: translateY(-50%); box-shadow: 0 0 6px rgba(212, 175, 55, .8);
+}
+.rep-controles { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: .5rem; }
+.rep-salto {
+  width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer; background: none;
+  color: var(--morado); font-family: var(--f-texto); font-weight: 600; font-size: .95rem;
+}
+.rep-salto:hover { background: var(--lila-claro); }
+.rep-play {
+  width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer;
+  display: grid; place-items: center; color: #3a2410;
+  background: radial-gradient(circle at 35% 30%, #f8e7a8, var(--oro) 50%, var(--oro-osc));
+  box-shadow: 0 6px 16px rgba(160, 122, 24, .45);
+}
+.rep-play svg { width: 24px; height: 24px; grid-area: 1 / 1; }
+.rep-play .ico-pausa, body.musica-on .rep-play .ico-play { display: none; }
+body.musica-on .rep-play .ico-pausa { display: block; }
