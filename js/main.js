@@ -35,7 +35,7 @@ const CONFIG = {
   ],
 
   vestimenta: "Formal",
-  regalo: "Con mucho cariño recibiré el obsequio que desees darme, ya sea un obsequio o lluvia de sobres.",
+  regalo: "Con mucho cariño recibiré el detalle que desees darme, ya sea un obsequio o lluvia de sobres.",
   notaPase: "",                    
   pasesPorDefecto: 1,
 
