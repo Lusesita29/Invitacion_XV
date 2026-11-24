@@ -3,7 +3,6 @@
    ========================================================= */
 const CONFIG = {
   nombre: "Keitlin",
-  musica: "assets/audio/Enredados.mp3",
   apellidos: "Agudelo García",
   nombreCompleto: "Keitlin Agudelo García",
   padre: "Jhonatan Agudelo",
@@ -16,10 +15,10 @@ const CONFIG = {
   fechaCorta: "19 · 12 · 2026",
   hora: "8:00 p. m.",
 
-  lugar: {                   // Opcional: nombre del salón o "Casa de la familia Agudelo"
+  lugar: {
     direccion: "Calle 37 # 9D-03",
-    Barrio: "El Campito, Barranquilla, Atlántico",                    // ⚠️ ESCRIBE LA CIUDAD (ej. "Medellín") para que Maps encuentre la dirección
-    mapsUrl: "https://maps.app.goo.gl/6yihX9d9K3eJJbQn8",                   // Mejor aún: pega el enlace de "Compartir" de Google Maps
+    ciudad: "El Campito, Barranquilla, Atlántico",
+    mapsUrl: "https://maps.app.goo.gl/6yihX9d9K3eJJbQn8"
 
   },
 
@@ -240,7 +239,8 @@ function prepararUbicacion() {
   const l = CONFIG.lugar;
   const q = encodeURIComponent([l.nombre, l.direccion, l.ciudad, "Colombia"].filter(Boolean).join(", "));
   $("#btnMaps").href = l.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${q}`;
-  $("#btnWaze").href = l.wazeUrl || `https://waze.com/ul?q=${q}&navigate=yes`;
+  const waze = $("#btnWaze");
+  if (waze) waze.href = l.wazeUrl || `https://waze.com/ul?q=${q}&navigate=yes`;
 }
 
 /* =========================================================
@@ -285,62 +285,45 @@ function prepararPase() {
 function prepararConfirmacion() {
   const quien = INVITADO ? `Soy ${INVITADO} y` : "Hola,";
   const msg = `${quien} confirmo mi asistencia a los XV años de ${CONFIG.nombre} ✨ (${PASES} ${PASES === 1 ? "pase" : "pases"})`;
-  $("#btnWhatsapp").href = `https://wa.me/+573168041589${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  $("#btnWhatsapp").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
 }
 
 /* =========================================================
-   11. REPRODUCTOR DISCRETO
+   11. MÚSICA (disco en la esquina del libro)
    ========================================================= */
 let musicaPausadaPorUsuario = false;
 function prepararMusica() {
   const audio = $("#audio");
-  const player = $("#miniPlayer");
-  const barra = $("#mpBarra");
-  audio.src = CONFIG.musica;
+  const disco = $("#btnMusica");
+  const VUELTA = 169.65; // largo del anillo de progreso
+  audio.src = CONFIG.musica || "assets/audio/Enredados.mp3";
   audio.volume = 0.6;
+
+  const pintar = () => {
+    const pct = audio.duration ? audio.currentTime / audio.duration : 0;
+    $("#anilloProgreso").style.strokeDashoffset = VUELTA * (1 - pct);
+  };
+  const estado = (sonando) => {
+    disco.classList.toggle("sonando", sonando);
+    disco.setAttribute("aria-label", sonando ? "Pausar música" : "Reproducir música");
+  };
 
   audio.addEventListener("loadedmetadata", () => {
     if (CONFIG.inicioMusica) audio.currentTime = CONFIG.inicioMusica;
+    pintar();
   }, { once: true });
+  audio.addEventListener("play", () => estado(true));
+  audio.addEventListener("pause", () => estado(false));
+  audio.addEventListener("timeupdate", pintar);
 
-  $("#btnMusica").addEventListener("click", () => {
+  disco.addEventListener("click", () => {
     if (audio.paused) { musicaPausadaPorUsuario = false; reproducir(); }
     else { musicaPausadaPorUsuario = true; audio.pause(); }
   });
-  audio.addEventListener("play", () => {
-    player.classList.add("sonando");
-    $("#btnMusica").setAttribute("aria-label", "Pausar música");
-  });
-  audio.addEventListener("pause", () => {
-    player.classList.remove("sonando");
-    $("#btnMusica").setAttribute("aria-label", "Reproducir música");
-  });
-  audio.addEventListener("timeupdate", () => {
-    if (audio.duration) $("#mpProgreso").style.width = `${(audio.currentTime / audio.duration) * 100}%`;
-  });
-
-  // Tocar la barra para adelantar o regresar
-  barra.addEventListener("click", (e) => {
-    if (!audio.duration) return;
-    const r = barra.getBoundingClientRect();
-    audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
-  });
-  barra.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowRight") audio.currentTime += 5;
-    if (e.key === "ArrowLeft") audio.currentTime -= 5;
-  });
-
-  // En el celular se ilumina unos segundos al tocarlo
-  let tPlayer;
-  player.addEventListener("touchstart", () => {
-    player.classList.add("visible");
-    clearTimeout(tPlayer);
-    tPlayer = setTimeout(() => player.classList.remove("visible"), 3000);
-  }, { passive: true });
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) audio.pause();
-    else if (!musicaPausadaPorUsuario && !player.classList.contains("oculto")) reproducir();
+    else if (!musicaPausadaPorUsuario && !$("#escenario").classList.contains("oculto")) reproducir();
   });
 }
 function reproducir() {
@@ -356,7 +339,6 @@ function prepararBienvenida() {
   $("#btnAbrir").addEventListener("click", () => {
     $("#bienvenida").classList.add("salir");
     $("#escenario").classList.remove("oculto");
-    $("#miniPlayer").classList.remove("oculto");
     reproducir(); // los navegadores solo permiten audio después de un toque
   });
 }
