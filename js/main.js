@@ -1,3 +1,6 @@
+/* =========================================================
+   1. CONFIGURACIÓN — edita SOLO esta parte con tus datos
+   ========================================================= */
 const CONFIG = {
   nombre: "Keitlin",
   apellidos: "Agudelo García",
@@ -16,31 +19,24 @@ const CONFIG = {
     direccion: "Calle 37 # 9D-03",
     ciudad: "El Campito, Barranquilla, Atlántico",
     mapsUrl: "https://maps.app.goo.gl/6yihX9d9K3eJJbQn8"
-
   },
 
-   // Música 
+  // Música (debe coincidir EXACTO con el nombre del archivo, con mayúsculas)
   musica: "assets/audio/Enredados.mp3",
   inicioMusica: 0,                 // segundo en el que empieza la canción
   cancion: {          // nombre que se ve en la página de música
     detalle: "Dale play y vive la magia conmigo ✨"
   },
 
-  // Fotos de la quinceañera: aparecen intercaladas, una página sí y una no.
-  // Hay 7 espacios para fotos. Si pones menos, se repiten en orden.
+  // Galería: 3 fotos de la quinceañera (súbelas a assets/img/)
   fotos: [
     "assets/img/foto1.jpg",
     "assets/img/foto2.jpg",
-    "assets/img/foto3.jpg",
+    "assets/img/foto3.jpg"
   ],
 
   vestimenta: "Formal",
-  regalo: "Con mucho cariño recibiré el detalle que desees darme, ya sea un obsequio o lluvia de sobres.",
-  notaPase: "",                    
-  pasesPorDefecto: 1,
-
-  // Confirmación de asistencia
-  whatsapp: "573168041589"         
+  notaVestimenta: "El color lila está reservado para la quinceañera."
 };
 
 /* =========================================================
@@ -52,7 +48,6 @@ const leer = (ruta) => ruta.split(".").reduce((o, k) => (o ? o[k] : undefined), 
 
 const params = new URLSearchParams(location.search);
 const INVITADO = (params.get("invitado") || "").trim().slice(0, 60);
-const PASES = Math.max(1, Math.min(20, parseInt(params.get("pases"), 10) || CONFIG.pasesPorDefecto));
 
 /* =========================================================
    3. TEXTOS DESDE LA CONFIGURACIÓN
@@ -70,32 +65,22 @@ function aplicarConfig() {
 }
 
 /* =========================================================
-   4. PÁGINAS DE FOTO INTERCALADAS (una sí, una no)
+   4. GALERÍA DE FOTOS (una página con las 3 fotos)
    ========================================================= */
-function insertarFotos() {
-  const fotos = CONFIG.fotos;
-  if (!fotos.length) return;
-  const paginas = $$("#libro .hoja");
-
-  paginas.slice(0, -1).forEach((pagina, i) => {
-    const n = i % fotos.length;
-    const hoja = document.createElement("article");
-    hoja.className = "hoja hoja-foto";
-    hoja.innerHTML =
-      `<div class="cara frente foto-pag"><div class="pagina">
-         <button type="button" class="marco-foto" aria-label="Ver foto en grande"></button>
-         <p class="pie-foto"></p>
-       </div></div>`;
-
-    const marco = hoja.querySelector(".marco-foto");
+function renderGaleria() {
+  const g = $("#galeria");
+  CONFIG.fotos.forEach((src, i) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "foto";
+    btn.setAttribute("aria-label", `Ver foto ${i + 1} en grande`);
     const img = new Image();
-    img.src = fotos[n];
-    img.onerror = () => { marco.classList.add("vacia"); img.remove(); };
-    marco.appendChild(img);
-    marco.addEventListener("click", () => { if (!marco.classList.contains("vacia")) abrirFoto(n); });
-    hoja.querySelector(".pie-foto").textContent = CONFIG.nombre;
-
-    pagina.after(hoja);
+    img.alt = `Foto ${i + 1} de ${CONFIG.nombre}`;
+    img.src = src;
+    img.onerror = () => { btn.classList.add("vacia"); img.remove(); };
+    btn.appendChild(img);
+    btn.addEventListener("click", () => { if (!btn.classList.contains("vacia")) abrirFoto(i); });
+    g.appendChild(btn);
   });
 }
 
@@ -107,7 +92,6 @@ let actual = 0;
 let tActiva;
 
 function prepararLibro() {
-  insertarFotos();
   hojas = $$(".hoja");
 
   hojas.forEach((hoja, i) => {
@@ -261,24 +245,6 @@ function moverFoto(paso) {
 }
 
 /* =========================================================
-   9. PASES PERSONALIZADOS  (?invitado=Familia%20Pérez&pases=4)
-   ========================================================= */
-function prepararPase() {
-  $("#paseNombre").textContent = INVITADO || "Invitado especial";
-  $("#paseCantidad").textContent = PASES;
-  $("#paseTexto").textContent = PASES === 1 ? "pase" : "pases";
-}
-
-/* =========================================================
-   10. CONFIRMACIÓN (Google Forms + WhatsApp)
-   ========================================================= */
-function prepararConfirmacion() {
-  const quien = INVITADO ? `Soy ${INVITADO} y` : "Hola,";
-  const msg = `${quien} confirmo mi asistencia a los XV años de ${CONFIG.nombre} ✨ (${PASES} ${PASES === 1 ? "pase" : "pases"})`;
-  $("#btnWhatsapp").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-}
-
-/* =========================================================
    11. MÚSICA (disco en la esquina del libro)
    ========================================================= */
 let musicaPausadaPorUsuario = false;
@@ -353,9 +319,8 @@ function crearFaroles() {
 document.addEventListener("DOMContentLoaded", () => {
   // El sello y la música van primero: así siempre funcionan, aunque otra parte falle
   const pasos = [
-    prepararBienvenida, prepararMusica, aplicarConfig, prepararLibro,
-    prepararVisor, prepararUbicacion, prepararPase, prepararConfirmacion,
-    iniciarCuentaRegresiva, crearFaroles
+    prepararBienvenida, prepararMusica, aplicarConfig, renderGaleria, prepararLibro,
+    prepararVisor, prepararUbicacion, iniciarCuentaRegresiva, crearFaroles
   ];
   pasos.forEach((paso) => {
     try { paso(); }

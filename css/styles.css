@@ -497,3 +497,110 @@ body.musica-on .vinilo { animation-play-state: running; }
 .rep-play svg { width: 24px; height: 24px; grid-area: 1 / 1; }
 .rep-play .ico-pausa, body.musica-on .rep-play .ico-play { display: none; }
 body.musica-on .rep-play .ico-pausa { display: block; }
+
+
+/* =========================================================
+   AJUSTES: DISEÑO RESPONSIVO, LETRAS MÁS SEPARADAS Y GALERÍA
+   (este bloque va al final para que tenga prioridad)
+   ========================================================= */
+
+/* ---------- Tamaño del libro según ancho Y alto de la pantalla ---------- */
+:root { --w: min(90vw, 420px, max(250px, calc((100vh - 140px) / 1.55))); }
+@supports (height: 100svh) {
+  :root { --w: min(90vw, 420px, max(250px, calc((100svh - 140px) / 1.55))); }
+}
+@media (min-width: 900px) {
+  :root { --w: min(42vw, 420px, max(260px, calc((100vh - 140px) / 1.55))); }
+  @supports (height: 100svh) {
+    :root { --w: min(42vw, 420px, max(260px, calc((100svh - 140px) / 1.55))); }
+  }
+}
+.escenario { gap: 14px; padding: 18px 10px 26px; }
+/* Las letras de las páginas crecen o se achican con el libro */
+.libro { container-type: inline-size; }
+
+.frente { padding: clamp(24px, 8cqi, 32px) clamp(16px, 6cqi, 26px) clamp(38px, 11cqi, 46px); }
+.deco-esq { width: clamp(50px, 18cqi, 74px); height: clamp(50px, 18cqi, 74px); }
+
+/* ---------- Tipografía con más aire (misma letra, menos apretada) ---------- */
+.pre { font-size: clamp(.7rem, 3cqi, .85rem); line-height: 1.6; letter-spacing: .24em; }
+.titulo-pag { font-size: clamp(1rem, 5cqi, 1.3rem); line-height: 1.4; margin: .55rem 0 .7rem; }
+.nombre-grande { font-size: clamp(2.5rem, 17cqi, 4.4rem); line-height: 1.3; margin: .15em 0 .05em; }
+.apellidos { font-size: clamp(.8rem, 3.8cqi, 1rem); line-height: 1.6; margin: .1rem 0 .5rem; }
+.xv { font-size: clamp(.95rem, 4.6cqi, 1.2rem); line-height: 1.6; }
+.fecha-corta { font-size: clamp(.9rem, 4.2cqi, 1.1rem); line-height: 1.6; }
+.hint { margin-top: 1.3rem; font-size: clamp(.8rem, 3.6cqi, .92rem); line-height: 1.55; }
+.texto { font-size: clamp(.95rem, 4.4cqi, 1.1rem); line-height: 1.65; }
+.texto.mini { font-size: clamp(.8rem, 3.6cqi, .9rem); margin-top: .7rem; }
+.nombres { font-size: clamp(1.5rem, 8cqi, 2.1rem); line-height: 1.45; margin: .25rem 0 .3rem; }
+.y { font-size: clamp(1.3rem, 6cqi, 1.6rem); line-height: 1.4; }
+.frase { font-size: clamp(.95rem, 4.4cqi, 1.12rem); line-height: 1.7; padding: 0 .5rem; }
+.lugar { font-size: clamp(.95rem, 4.6cqi, 1.1rem); line-height: 1.5; margin-bottom: .4rem; }
+.direccion { font-size: clamp(1.05rem, 5.4cqi, 1.35rem); line-height: 1.45; margin: .3rem 0; }
+.hora { font-size: clamp(1rem, 4.6cqi, 1.15rem); line-height: 1.5; margin-top: .5rem; }
+.icono-grande { font-size: clamp(1.7rem, 8cqi, 2.2rem); line-height: 1.3; margin-bottom: .2rem; }
+.icono-farol { width: clamp(30px, 10cqi, 40px); height: clamp(40px, 13.5cqi, 54px); }
+.portada .portada-torre { width: clamp(44px, 16cqi, 64px); height: clamp(74px, 27cqi, 108px); }
+.trenza { margin: 1rem auto; }
+.cuenta { gap: clamp(4px, 2cqi, 8px); margin: 1.1rem 0 .8rem; }
+.cuenta span { font-size: clamp(1.1rem, 6.5cqi, 1.7rem); line-height: 1.3; }
+.cuenta small { font-size: clamp(.6rem, 2.8cqi, .72rem); }
+.cuenta-msg { font-size: clamp(.95rem, 4.4cqi, 1.05rem); line-height: 1.6; }
+.btn { font-size: clamp(.9rem, 4.2cqi, 1.02rem); padding: .75em 1.3em; }
+.num-pag { font-size: clamp(.68rem, 3cqi, .78rem); }
+
+/* Bienvenida */
+.sobre { padding: clamp(24px, 6vw, 34px) clamp(18px, 5vw, 26px) clamp(22px, 5vw, 28px); }
+.sobre h1 { line-height: 1.25; margin: .2rem 0; }
+.sobre-nombre { line-height: 1.5; }
+.sobre-sub, .sobre-hint { line-height: 1.6; }
+@media (max-height: 640px) {
+  .sobre-torre { width: 44px; height: 72px; }
+  .sello { width: 76px; height: 76px; }
+}
+
+/* ---------- Código de vestimenta ---------- */
+.lugar.vestimenta { font-size: clamp(1.05rem, 5.2cqi, 1.3rem); letter-spacing: .2em; margin-bottom: .25rem; }
+.nota-lila { font-style: italic; color: var(--morado-2); margin-bottom: .3rem; }
+
+/* ---------- Galería de 3 fotos ---------- */
+.galeria {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: clamp(8px, 3cqi, 12px);
+  width: min(100%, calc((var(--h) - 170px) / 1.1));
+  aspect-ratio: 1 / 1.1;
+  margin: .3rem auto 0; padding: 6px;
+}
+.galeria .foto { aspect-ratio: auto; width: 100%; height: 100%; border-width: 4px; }
+.galeria .foto:first-child { grid-row: 1 / 3; transform: rotate(-2deg); }
+.galeria .foto:nth-child(2) { transform: rotate(2.5deg); }
+.galeria .foto:nth-child(3) { transform: rotate(-1.5deg); }
+.galeria .foto:hover { transform: rotate(0) scale(1.03); z-index: 2; }
+.hoja.activa .pagina > .galeria { animation-name: revelar; animation-duration: .6s; }
+
+/* ---------- Reproductor de la esquina en pantallas pequeñas ---------- */
+@media (max-width: 480px) {
+  .rep-esquina { width: 52px; height: 52px; top: -14px; right: -10px; }
+  .rep-esquina-anillo { width: 52px; height: 52px; }
+  .rep-esquina-vinilo { width: 40px; height: 40px; }
+}
+
+/* ---------- Pantallas bajitas (celular acostado) ---------- */
+@media (max-height: 520px) {
+  .escenario { justify-content: flex-start; padding-top: 22px; }
+}
+
+/* Bienvenida: si la pantalla es bajita se puede desplazar y nunca se corta el sello */
+.bienvenida { display: flex; overflow-y: auto; }
+.bienvenida .sobre { margin: auto; }
+@media (max-height: 520px) {
+  .sobre { padding: 16px 20px; }
+  .sobre-torre { display: none; }
+  .sobre h1 { font-size: 2.6rem; }
+  .sobre .trenza { margin: 8px auto 10px; }
+  .sello { width: 66px; height: 66px; }
+  .sello span { font-size: 1.3rem; }
+  .sobre-hint { margin-top: 8px; }
+}
