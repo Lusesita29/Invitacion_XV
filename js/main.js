@@ -292,11 +292,144 @@ function reproducir() {
    ========================================================= */
 function prepararBienvenida() {
   [...$(".sobre").children].forEach((el, k) => el.style.setProperty("--i", k));
-  $("#btnAbrir").addEventListener("click", () => {
+  let abierta = false;
+
+  const mostrarLibro = (cine) => {
     $("#bienvenida").classList.add("salir");
     $("#escenario").classList.remove("oculto");
+    if (cine) $("#escenario").classList.add("cine-entra");
+  };
+
+  $("#btnAbrir").addEventListener("click", () => {
+    if (abierta) return;
+    abierta = true;
     reproducir(); // los navegadores solo permiten audio después de un toque
+
+    const sinMovimiento = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (sinMovimiento) { mostrarLibro(false); return; }
+    try { transicionCine($("#btnAbrir"), () => mostrarLibro(true)); }
+    catch (err) { console.error(err); mostrarLibro(false); }
   });
+}
+
+/* =========================================================
+   13. TRANSICIÓN TIPO PELÍCULA: franjas de cine, destello,
+       chispas doradas, flores y pétalos que caen
+   ========================================================= */
+function transicionCine(origen, alCambiar) {
+  const cine = $("#cine");
+  const cv = $("#cineCanvas");
+  const ctx = cv.getContext("2d");
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = innerWidth, H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const r = origen.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  cine.style.setProperty("--x", `${cx}px`);
+  cine.style.setProperty("--y", `${cy}px`);
+
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const COLORES = ["#c9a6e8", "#f2b8cf", "#ffffff", "#e4d3ff", "#f7c6dd"];
+  const parts = [];
+
+  // Chispas doradas que estallan desde el sello
+  for (let i = 0; i < 90; i++) {
+    const a = rnd(0, Math.PI * 2), v = rnd(2, 11);
+    parts.push({ t: "chispa", x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+      edad: 0, vida: rnd(50, 95), tam: rnd(2, 5.5), c: Math.random() < 0.7 ? "#f3dc8a" : "#ffffff" });
+  }
+  // Flores que salen disparadas
+  for (let i = 0; i < 18; i++) {
+    const a = rnd(0, Math.PI * 2), v = rnd(3, 8);
+    parts.push({ t: "flor", x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, g: 0.12,
+      rot: rnd(0, 6), vr: rnd(-0.08, 0.08), edad: 0, vida: rnd(110, 170), tam: rnd(7, 13), c: COLORES[i % COLORES.length] });
+  }
+  // Pétalos y flores que caen sobre el libro
+  const nPet = W < 600 ? 45 : 80;
+  for (let i = 0; i < nPet; i++) {
+    parts.push({ t: Math.random() < 0.3 ? "flor" : "petalo", cae: true,
+      x: rnd(0, W), y: rnd(-H * 0.5, -20), vx: rnd(-0.6, 0.6), vy: rnd(1.4, 3.2), g: 0,
+      rot: rnd(0, 6), vr: rnd(-0.05, 0.05), fase: rnd(0, 6),
+      edad: -rnd(25, 70), vida: rnd(200, 280), tam: rnd(5, 10), c: COLORES[i % COLORES.length] });
+  }
+
+  const chispa = (p, al) => {
+    const s = p.tam * (1 + (1 - al));
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = al * 0.35;
+    ctx.fillStyle = p.c;
+    ctx.beginPath(); ctx.arc(p.x, p.y, s * 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = al;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y - s * 2.2); ctx.lineTo(p.x + s * 0.4, p.y);
+    ctx.lineTo(p.x, p.y + s * 2.2); ctx.lineTo(p.x - s * 0.4, p.y); ctx.closePath();
+    ctx.moveTo(p.x - s * 2.2, p.y); ctx.lineTo(p.x, p.y + s * 0.4);
+    ctx.lineTo(p.x + s * 2.2, p.y); ctx.lineTo(p.x, p.y - s * 0.4); ctx.closePath();
+    ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+  };
+  const flor = (p, al) => {
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.globalAlpha = al;
+    ctx.fillStyle = p.c;
+    for (let k = 0; k < 5; k++) {
+      const a = (k / 5) * Math.PI * 2;
+      ctx.beginPath(); ctx.arc(Math.cos(a) * p.tam * 0.45, Math.sin(a) * p.tam * 0.45, p.tam * 0.42, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#f3d36b";
+    ctx.beginPath(); ctx.arc(0, 0, p.tam * 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  };
+  const petalo = (p, al) => {
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.globalAlpha = al * 0.9;
+    ctx.fillStyle = p.c;
+    ctx.beginPath(); ctx.ellipse(0, 0, p.tam, p.tam * 0.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  };
+
+  // Secuencia de la "película"
+  cine.classList.remove("salida");
+  cine.classList.add("activo");
+  origen.classList.add("presionado");
+  $(".sobre").classList.add("cine-sale");
+  setTimeout(alCambiar, 750);                               // el libro aparece bajo el destello
+  setTimeout(() => cine.classList.add("salida"), 2000);     // se retiran las franjas de cine
+
+  const DURACION = 4300;
+  let inicio = null, ultimo = null;
+  function cuadro(t) {
+    if (inicio === null) { inicio = t; ultimo = t; }
+    const f = Math.min((t - ultimo) / 16.67, 3);
+    ultimo = t;
+    ctx.clearRect(0, 0, W, H);
+    let vivas = 0;
+    for (const p of parts) {
+      p.edad += f;
+      if (p.edad < 0) { vivas++; continue; }
+      if (p.edad > p.vida) continue;
+      vivas++;
+      if (p.cae) {
+        p.x += (p.vx + Math.sin(p.edad * 0.05 + p.fase) * 0.8) * f;
+        p.y += p.vy * f;
+      } else {
+        p.vx *= 0.97; p.vy = p.vy * 0.97 + (p.g || 0) * f;
+        p.x += p.vx * f; p.y += p.vy * f;
+      }
+      if (p.vr) p.rot += p.vr * f;
+      const al = Math.max(0, Math.min(1, (p.vida - p.edad) / 40, p.edad / 8));
+      if (p.t === "chispa") chispa(p, al);
+      else if (p.t === "flor") flor(p, al);
+      else petalo(p, al);
+    }
+    ctx.globalAlpha = 1;
+    if (t - inicio < DURACION && vivas > 0) requestAnimationFrame(cuadro);
+    else {
+      ctx.clearRect(0, 0, W, H);
+      cine.classList.remove("activo", "salida");
+    }
+  }
+  requestAnimationFrame(cuadro);
 }
 
 function crearFaroles() {
