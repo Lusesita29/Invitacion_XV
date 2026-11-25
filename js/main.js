@@ -320,8 +320,9 @@ function transicionCine(origen, alCambiar) {
   const cine = $("#cine");
   const cv = $("#cineCanvas");
   const ctx = cv.getContext("2d");
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const W = innerWidth, H = innerHeight;
+  const movil = W < 600;
+  const dpr = Math.min(window.devicePixelRatio || 1, movil ? 1.5 : 2);
   cv.width = W * dpr; cv.height = H * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -335,24 +336,24 @@ function transicionCine(origen, alCambiar) {
   const parts = [];
 
   // Chispas doradas que estallan desde el sello
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < (movil ? 60 : 90); i++) {
     const a = rnd(0, Math.PI * 2), v = rnd(2, 11);
     parts.push({ t: "chispa", x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
       edad: 0, vida: rnd(50, 95), tam: rnd(2, 5.5), c: Math.random() < 0.7 ? "#f3dc8a" : "#ffffff" });
   }
   // Flores que salen disparadas
-  for (let i = 0; i < 18; i++) {
+  for (let i = 0; i < (movil ? 14 : 18); i++) {
     const a = rnd(0, Math.PI * 2), v = rnd(3, 8);
     parts.push({ t: "flor", x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, g: 0.12,
       rot: rnd(0, 6), vr: rnd(-0.08, 0.08), edad: 0, vida: rnd(110, 170), tam: rnd(7, 13), c: COLORES[i % COLORES.length] });
   }
   // Pétalos y flores que caen sobre el libro
-  const nPet = W < 600 ? 45 : 80;
+  const nPet = movil ? 40 : 70;
   for (let i = 0; i < nPet; i++) {
     parts.push({ t: Math.random() < 0.3 ? "flor" : "petalo", cae: true,
       x: rnd(0, W), y: rnd(-H * 0.5, -20), vx: rnd(-0.6, 0.6), vy: rnd(1.4, 3.2), g: 0,
       rot: rnd(0, 6), vr: rnd(-0.05, 0.05), fase: rnd(0, 6),
-      edad: -rnd(25, 70), vida: rnd(200, 280), tam: rnd(5, 10), c: COLORES[i % COLORES.length] });
+      edad: -rnd(85, 150), vida: rnd(200, 280), tam: rnd(5, 10), c: COLORES[i % COLORES.length] });
   }
 
   const chispa = (p, al) => {
@@ -393,10 +394,10 @@ function transicionCine(origen, alCambiar) {
   cine.classList.add("activo");
   origen.classList.add("presionado");
   $(".sobre").classList.add("cine-sale");
-  setTimeout(alCambiar, 750);                               // el libro aparece bajo el destello
-  setTimeout(() => cine.classList.add("salida"), 2000);     // se retiran las franjas de cine
+  setTimeout(alCambiar, 1450);                              // el libro aparece mientras la luz se disuelve
+  setTimeout(() => cine.classList.add("salida"), 2300);     // se retiran las franjas de cine
 
-  const DURACION = 4300;
+  const DURACION = 5200;
   let inicio = null, ultimo = null;
   function cuadro(t) {
     if (inicio === null) { inicio = t; ultimo = t; }
@@ -427,6 +428,7 @@ function transicionCine(origen, alCambiar) {
     else {
       ctx.clearRect(0, 0, W, H);
       cine.classList.remove("activo", "salida");
+      $("#escenario").classList.add("cine-listo");      // libro quieto, libera la animación
     }
   }
   requestAnimationFrame(cuadro);
